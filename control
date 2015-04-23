@@ -1,0 +1,9 @@
+Package: com.ps.emoji83
+Name: Emoji83
+Depends: mobilesubstrate, firmware (>= 7.0)
+Version: 1.0
+Architecture: iphoneos-arm
+Description: 8.3 Emoji for everyone.
+Maintainer: PoomSmart
+Author: PoomSmart
+Section: Tweaks
