@@ -136,7 +136,6 @@ CGFloat emoSize = 32;
 NSInteger row = 5;
 NSInteger col = 8;
 CGFloat margin = 8.5;
-CGFloat marginLandscape = margin + 1.5;
 
 static UIKeyboardEmojiScrollView *emojiScrollView()
 {
@@ -211,7 +210,7 @@ static CGFloat paddingXForPortrait()
 static CGFloat paddingYForPortrait()
 {
 	CGFloat h = keyboardHeight();
-	CGFloat padding = (h - offset(YES) - dotHeight() - margin - (row * emoSize)) / (row - 1);
+	CGFloat padding = (h - offset(YES) - dotHeight() - (2 *margin) - (row * emoSize)) / (row - 1);
 	return padding;
 }
 
@@ -219,7 +218,7 @@ static NSInteger bestRowForLandscape()
 {
 	CGFloat h = keyboardHeight();
 	CGFloat paddingX = paddingXForPortrait();
-	CGFloat u = h - offset(YES) - dotHeight() - marginLandscape + paddingX;
+	CGFloat u = h - offset(YES) - dotHeight() - margin + paddingX;
 	CGFloat d = emoSize + paddingX;
 	NSInteger bestRow = round(u/d);
 	return bestRow;
@@ -229,7 +228,7 @@ static CGFloat paddingYForLandscape()
 {
 	CGFloat h = keyboardHeight();
 	NSInteger bestRow = bestRowForLandscape();
-	CGFloat padding = (h - offset(NO) - dotHeight() - marginLandscape - (bestRow * emoSize)) / (bestRow - 1);
+	CGFloat padding = (h - offset(NO) - dotHeight() - margin - (bestRow * emoSize)) / (bestRow - 1);
 	return padding;
 }
 
