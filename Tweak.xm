@@ -133,8 +133,8 @@
 @end
 
 //CGFloat emoSize = 32;
-NSInteger row = IPAD ? 12 : 5;
-NSInteger col = IPAD ? 3 : 8;
+NSInteger row = IPAD ? 3 : 5;
+NSInteger col = IPAD ? 12 : 8;
 CGFloat margin = 8.5;
 
 static UIKeyboardEmojiScrollView *emojiScrollView()
