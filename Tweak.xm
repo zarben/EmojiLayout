@@ -132,9 +132,9 @@
 - (int)_frontMostAppOrientation;
 @end
 
-CGFloat emoSize = 32;
-NSInteger row = 5;
-NSInteger col = 8;
+//CGFloat emoSize = 32;
+NSInteger row = IPAD ? 12 : 5;
+NSInteger col = IPAD ? 3 : 8;
 CGFloat margin = 8.5;
 
 static UIKeyboardEmojiScrollView *emojiScrollView()
@@ -145,6 +145,11 @@ static UIKeyboardEmojiScrollView *emojiScrollView()
 	NSMutableDictionary *subviewIndex = MSHookIvar<NSMutableDictionary *>(keyplane, "_subviewIndex");
 	UIKeyboardEmojiScrollView *scrollView = subviewIndex[@"Emoji-InputView-Key"];
 	return scrollView;
+}
+
+static CGSize emojiSize(BOOL portrait)
+{
+	return [%c(UIKeyboardEmojiGraphics) emojiSize:portrait];
 }
 
 static CGSize emojiScrollViewSize()
@@ -177,7 +182,7 @@ static CGFloat keyboardHeight()
 	return height;
 }
 
-static CGFloat keyboardWidth()
+/*static CGFloat keyboardWidth()
 {
 	CGFloat width = emojiScrollViewSize().width;
 	if (width == 0.0f) {
@@ -193,7 +198,7 @@ static BOOL isPortrait()
 	UIApplication *application = [UIApplication sharedApplication];
 	int orientation = [application _frontMostAppOrientation];
 	return orientation == 1 || orientation == 2;
-}
+}*/
 
 static CGFloat offset(BOOL portrait)
 {
@@ -203,14 +208,14 @@ static CGFloat offset(BOOL portrait)
 static CGFloat paddingXForPortrait()
 {
 	CGFloat w = [UIKeyboardImpl defaultSizeForInterfaceOrientation:1].width;
-	CGFloat padding = (w - (2 * margin) - (col * emoSize)) / (col - 1);
+	CGFloat padding = (w - (2 * margin) - (col * emojiSize(YES).width)) / (col - 1);
 	return padding;
 }
 
 static CGFloat paddingYForPortrait()
 {
 	CGFloat h = keyboardHeight();
-	CGFloat padding = (h - offset(YES) - dotHeight() - (2 *margin) - (row * emoSize)) / (row - 1);
+	CGFloat padding = (h - offset(YES) - dotHeight() - (2 *margin) - (row * emojiSize(YES).height)) / (row - 1);
 	return padding;
 }
 
@@ -219,7 +224,7 @@ static NSInteger bestRowForLandscape()
 	CGFloat h = keyboardHeight();
 	CGFloat paddingX = paddingXForPortrait();
 	CGFloat u = h - offset(YES) - dotHeight() - margin + paddingX;
-	CGFloat d = emoSize + paddingX;
+	CGFloat d = emojiSize(NO).height + paddingX;
 	NSInteger bestRow = round(u/d);
 	return bestRow;
 }
@@ -228,7 +233,7 @@ static CGFloat paddingYForLandscape()
 {
 	CGFloat h = keyboardHeight();
 	NSInteger bestRow = bestRowForLandscape();
-	CGFloat padding = (h - offset(NO) - dotHeight() - margin - (bestRow * emoSize)) / (bestRow - 1);
+	CGFloat padding = (h - offset(NO) - dotHeight() - margin - (bestRow * emojiSize(NO).height)) / (bestRow - 1);
 	return padding;
 }
 
@@ -237,7 +242,7 @@ static NSInteger bestColForLandscape()
 	CGFloat w = [UIKeyboardImpl defaultSizeForInterfaceOrientation:3].width;
 	CGFloat px = paddingXForPortrait();
 	CGFloat u = (w - (2 * margin) + px);
-	CGFloat d = emoSize + px;
+	CGFloat d = emojiSize(NO).width + px;
 	NSInteger bestCol = round(u/d);
 	return bestCol;
 }
@@ -246,7 +251,7 @@ static CGFloat paddingXForLandscape()
 {
 	CGFloat w = [UIKeyboardImpl defaultSizeForInterfaceOrientation:3].width;
 	NSInteger bestCol = bestColForLandscape();
-	CGFloat padding = (w - (2 * margin) - (bestCol * emoSize))/(bestCol - 1);
+	CGFloat padding = (w - (2 * margin) - (bestCol * emojiSize(NO).width))/(bestCol - 1);
 	return padding;
 }
 
@@ -262,10 +267,10 @@ static CGPoint padding(BOOL portrait)
 
 %hook UIKeyboardEmojiGraphics
 
-+ (CGSize)emojiSize:(BOOL)portrait
+/*+ (CGSize)emojiSize:(BOOL)portrait
 {
 	return CGSizeMake(emoSize, emoSize);
-}
+}*/
 
 + (NSInteger)rowCount:(BOOL)portrait
 {
