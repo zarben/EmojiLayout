@@ -298,7 +298,7 @@ UIKeyboardEmoji *fake;
 
 %hook UIKeyboardEmojiPage
 
-- (void)setEmoji:(NSArray *)emoji
+- (void)takeEmoji:(NSArray *)emoji fromIndex:(NSUInteger)index
 {
 	if (emoji.count > 0) {
 		NSInteger numCols = MSHookIvar<NSInteger>(self, "_numCols");
@@ -316,7 +316,8 @@ UIKeyboardEmoji *fake;
 				}
 			}
 		}
-		emoji = reorderedEmoji;
+		%orig(reorderedEmoji, index);
+		return;
 	}
 	%orig;	
 }
@@ -327,7 +328,7 @@ UIKeyboardEmoji *fake;
 
 + (BOOL)hasVariantsForEmoji:(NSString *)emoji
 {
-	if ([emoji isEqualToString:@""])
+	if ([emoji isEqualToString:@" "])
 		return NO;
 	return %orig;
 }
@@ -337,6 +338,6 @@ UIKeyboardEmoji *fake;
 %ctor
 {
 	%init;
-	fake = [NSClassFromString(@"UIKeyboardEmoji") respondsToSelector:@selector(emojiWithString:hasDingbat:)] ? [NSClassFromString(@"UIKeyboardEmoji") emojiWithString:@"" hasDingbat:NO]
-				: [NSClassFromString(@"UIKeyboardEmoji") emojiWithString:@""];
+	fake = [NSClassFromString(@"UIKeyboardEmoji") respondsToSelector:@selector(emojiWithString:hasDingbat:)] ? [NSClassFromString(@"UIKeyboardEmoji") emojiWithString:@" " hasDingbat:NO]
+				: [NSClassFromString(@"UIKeyboardEmoji") emojiWithString:@" "];
 }
