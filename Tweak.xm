@@ -322,6 +322,17 @@ static CGPoint padding(BOOL portrait)
 
 %end
 
+%hook UIKeyboardEmojiCategory
+
++ (BOOL)hasVariantsForEmoji:(NSString *)emoji
+{
+	if ([emoji isEqualToString:@""])
+		return NO;
+	return %orig;
+}
+
+%end
+
 %ctor
 {
 	%init;
