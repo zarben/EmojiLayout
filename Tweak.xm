@@ -294,6 +294,8 @@ static CGPoint padding(BOOL portrait)
 
 %end
 
+UIKeyboardEmoji *fake;
+
 %hook UIKeyboardEmojiPage
 
 - (void)setEmoji:(NSArray *)emoji
@@ -309,9 +311,8 @@ static CGPoint padding(BOOL portrait)
 					UIKeyboardEmoji *emo = emoji[emojiIndex];
 					[reorderedEmoji addObject:emo];
 				} else {
-					UIKeyboardEmoji *fake = [NSClassFromString(@"UIKeyboardEmoji") respondsToSelector:@selector(emojiWithString:hasDingbat:)] ? [NSClassFromString(@"UIKeyboardEmoji") emojiWithString:@"" hasDingbat:NO]
-											: [NSClassFromString(@"UIKeyboardEmoji") emojiWithString:@""];
-					[reorderedEmoji addObject:fake];
+					if (fake)
+						[reorderedEmoji addObject:fake];
 				}
 			}
 		}
@@ -336,4 +337,6 @@ static CGPoint padding(BOOL portrait)
 %ctor
 {
 	%init;
+	fake = [NSClassFromString(@"UIKeyboardEmoji") respondsToSelector:@selector(emojiWithString:hasDingbat:)] ? [NSClassFromString(@"UIKeyboardEmoji") emojiWithString:@"" hasDingbat:NO]
+				: [NSClassFromString(@"UIKeyboardEmoji") emojiWithString:@""];
 }
