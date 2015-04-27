@@ -316,8 +316,10 @@ UIKeyboardEmoji *fake;
 				}
 			}
 		}
-		%orig(reorderedEmoji);
-		return;
+		if (reorderedEmoji.count > 0) {
+			%orig(reorderedEmoji);
+			return;
+		}
 	}
 	%orig;	
 }
