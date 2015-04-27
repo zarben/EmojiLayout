@@ -132,7 +132,7 @@
 - (int)_frontMostAppOrientation;
 @end
 
-//CGFloat emoSize = 32;
+//CGFloat emoSize = 16;
 NSInteger row = IPAD ? 3 : 5;
 NSInteger col = IPAD ? 12 : 8;
 CGFloat margin = 8.5;
@@ -290,6 +290,34 @@ static CGPoint padding(BOOL portrait)
 + (CGPoint)margin:(BOOL)portrait
 {
 	return CGPointMake(margin, dotHeight() + offset(portrait));
+}
+
+%end
+
+%hook UIKeyboardEmojiPage
+
+- (void)setEmoji:(NSArray *)emoji
+{
+	if (emoji.count > 0) {
+		NSInteger numCols = MSHookIvar<NSInteger>(self, "_numCols");
+		NSInteger numRows = MSHookIvar<NSInteger>(self, "_numRows");
+		NSMutableArray *reorderedEmoji = [NSMutableArray array];
+		for (NSUInteger row = 0; row < numRows; row++) {
+			for (NSUInteger count = 0; count < numCols; count++) {
+				NSUInteger emojiIndex = (count * numRows) + row;
+				if (emojiIndex < emoji.count) {
+					UIKeyboardEmoji *emo = emoji[emojiIndex];
+					[reorderedEmoji addObject:emo];
+				} else {
+					UIKeyboardEmoji *fake = [NSClassFromString(@"UIKeyboardEmoji") respondsToSelector:@selector(emojiWithString:hasDingbat:)] ? [NSClassFromString(@"UIKeyboardEmoji") emojiWithString:@"" hasDingbat:NO]
+											: [NSClassFromString(@"UIKeyboardEmoji") emojiWithString:@""];
+					[reorderedEmoji addObject:fake];
+				}
+			}
+		}
+		emoji = reorderedEmoji;
+	}
+	%orig;	
 }
 
 %end
