@@ -295,7 +295,7 @@ static CGPoint padding(BOOL portrait)
 
 %end
 
-UIKeyboardEmoji *fake;
+/*UIKeyboardEmoji *fake;
 
 %hook UIKeyboardEmojiPage
 
@@ -335,7 +335,7 @@ UIKeyboardEmoji *fake;
 	return %orig;
 }
 
-%end
+%end*/
 
 %ctor
 {
