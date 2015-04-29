@@ -279,11 +279,19 @@ static CGPoint padding(BOOL portrait)
 
 UIKeyboardEmoji *fake;
 
+BOOL pageZero = NO;
+
 %hook UIKeyboardEmojiPage
+
+- (void)takeEmoji:(NSArray *)emoji fromIndex:(NSUInteger)index
+{
+	pageZero = (index == 0);
+	%orig;
+}
 
 - (void)setEmoji:(NSArray *)emoji
 {
-	if (emoji.count > 0) {
+	if (emoji.count > 0 && !pageZero) {
 		NSMutableArray *reorderedEmoji = [NSMutableArray array];
 		for (NSInteger _row = 0; _row < row; _row++) {
 			for (NSInteger count = 0; count < col; count++) {
@@ -303,7 +311,7 @@ UIKeyboardEmoji *fake;
 			return;
 		}
 	}
-	%orig;	
+	%orig;
 }
 
 %end
