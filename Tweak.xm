@@ -129,6 +129,10 @@
 + (NSInteger)rowCount:(BOOL)portrait;
 @end
 
+@interface UIKeyboardEmojiInputController : NSObject
+- (double)scoreForEmoji:(UIKeyboardEmoji *)key;
+@end
+
 @interface UIApplication (EmojiLayout)
 - (int)_frontMostAppOrientation;
 @end
@@ -283,12 +287,6 @@ BOOL pageZero = NO;
 
 %hook UIKeyboardEmojiPage
 
-- (void)takeEmoji:(NSArray *)emoji fromIndex:(NSUInteger)index
-{
-	pageZero = (index == 0);
-	%orig;
-}
-
 - (void)setEmoji:(NSArray *)emoji
 {
 	if (emoji.count > 0 && !pageZero) {
@@ -318,14 +316,22 @@ BOOL pageZero = NO;
 
 %hook _UIEmojiPageControl
 
-- (void)setHidesForSinglePage:(BOOL)hide
+- (void)layoutSubviews
 {
-	%orig(NO);
+	[self setHidesForSinglePage:NO];
+	%orig;
 }
 
 %end
 
 %hook UIKeyboardEmojiScrollView
+
+- (void)layoutRecents
+{
+	pageZero = YES;
+	%orig;
+	pageZero = NO;
+}
 
 - (void)layoutPages
 {
@@ -348,6 +354,34 @@ BOOL pageZero = NO;
 }
 
 %end
+
+/*%hook UIKeyboardEmojiInputController
+
+- (void)emojiUsed:(NSString *)emoji
+{
+	if ([emoji isEqualToString:@""])
+		return;
+	%orig;
+	UIKeyboardEmoji *history = MSHookIvar<UIKeyboardEmoji *>(self, "_usageHistory");
+	double newScore = [self scoreForEmoji:emoji];
+	NSInteger count = row * col;
+	NSMutableArray *recents = MSHookIvar<NSMutableArray *>(self, "_recents");
+	if (recents.count > 0) {
+		NSUInteger index = [recents indexOfObject:emoji];
+		if (index == NSNotFound) {
+			if (recents.count < count) {
+				NSString *lastKey = [recents lastObject];
+				double oldScore = [self scoreForEmoji:lastKey];
+				if (newScore > oldScore)
+					[recents removeLastObject];
+			}
+		} else
+			[recents removeObjectAtIndex:index];
+	}
+	
+}
+
+%end*/
 
 %ctor
 {
