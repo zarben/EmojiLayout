@@ -4,9 +4,7 @@
 @interface UIKeyboard : UIView
 + (UIKeyboard *)activeKeyboard;
 + (UIKeyboard *)activeKeyboardForScreen:(UIScreen *)screen;
-+ (CGSize)defaultSize;
 + (CGSize)defaultSizeForInterfaceOrientation:(int)orientation;
-+ (CGSize)defaultSizeForOrientation:(int)orientation;
 @end
 
 @interface UIKBKeyView : UIView
@@ -185,24 +183,6 @@ static CGFloat keyboardHeight()
 	return height;
 }
 
-/*static CGFloat keyboardWidth()
-{
-	CGFloat width = emojiScrollViewSize().width;
-	if (width == 0.0f) {
-		UIKeyboard *keyboard = [UIKeyboard activeKeyboard];
-		if (keyboard)
-			width = keyboard.frame.size.width;
-	}
-	return width;
-}
-
-static BOOL isPortrait()
-{
-	UIApplication *application = [UIApplication sharedApplication];
-	int orientation = [application _frontMostAppOrientation];
-	return orientation == 1 || orientation == 2;
-}*/
-
 static CGFloat offset(BOOL portrait)
 {
 	return [%c(UIKeyboardEmojiGraphics) emojiPageControlYOffset:portrait];
@@ -324,6 +304,15 @@ UIKeyboardEmoji *fake;
 		}
 	}
 	%orig;	
+}
+
+%end
+
+%hook _UIEmojiPageControl
+
+- (void)setHidesForSinglePage:(BOOL)hide
+{
+	%orig(NO);
 }
 
 %end
