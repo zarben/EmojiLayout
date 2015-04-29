@@ -31,6 +31,8 @@
 
 @interface UIKeyboardEmojiScrollView : UIKBKeyView {
 	_UIEmojiScrollView *_scrollView;
+	int _currentPage;
+	NSMutableArray *_pages;
 }
 - (void)doLayout;
 @end
@@ -295,7 +297,7 @@ static CGPoint padding(BOOL portrait)
 
 %end
 
-/*UIKeyboardEmoji *fake;
+UIKeyboardEmoji *fake;
 
 %hook UIKeyboardEmojiPage
 
@@ -326,6 +328,19 @@ static CGPoint padding(BOOL portrait)
 
 %end
 
+%hook UIKeyboardEmojiScrollView
+
+- (void)layoutPages
+{
+	int currentPage = MSHookIvar<int>(self, "_currentPage");
+	NSMutableArray *pages = MSHookIvar<NSMutableArray *>(self, "_pages");
+	if (currentPage >= pages.count)
+		MSHookIvar<int>(self, "_currentPage") = 0;
+	%orig;
+}
+
+%end
+
 %hook UIKeyboardEmojiCategory
 
 + (BOOL)hasVariantsForEmoji:(NSString *)emoji
@@ -335,7 +350,7 @@ static CGPoint padding(BOOL portrait)
 	return %orig;
 }
 
-%end*/
+%end
 
 %ctor
 {
